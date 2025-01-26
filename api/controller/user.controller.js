@@ -1,4 +1,5 @@
 import prisma from "../lib/prisma.js"
+import bcrypt from "bcrypt"
 
 export const getUsers = async (req, res) => {
     //console.log("It Works")
@@ -17,7 +18,7 @@ export const getUser = async (req, res) => {
    
     try {
       const user = await prisma.user.findUnique({
-        where:  { id},
+        where:  { id:Number(id) },
       });
       res.status(200).json(user);
     } catch (err) {
@@ -27,35 +28,57 @@ export const getUser = async (req, res) => {
   };
 
 
-export const updateUser = async (req, res) => {
-    const id = req.params.id;
-    const tokenUserId = req.userId;
-    const body = req.body;
-    if (tokenUserId !== id) {
-      return res.status(403).json({ message: "You can update only your account!" });
+  export const updateUser = async (req, res) => {
+    const id = Number(req.params.id); ;
+    const tokenUserId = Number(req.userId);;
+    const { password, avatar, ...inputs } = req.body;
+  
+    if (id !== tokenUserId) {
+      return res.status(403).json({ message: "Not Authorized!" });
     }
-    try{
-        const updatedUser=await prisma.user.update({
-            where: { id},
-            data:body
-        })
-        res.status(200).json(updatedUser)
-
-    }catch(err){
-        console.log(err)
-        res.status(500).json({message:"Failed to update user"})
+  
+    let updatedPassword = null;
+    try {
+      if (password) {
+        updatedPassword = await bcrypt.hash(password, 10);
+      }
+  
+      const updatedUser = await prisma.user.update({
+        where: { id:Number(id) },
+        data: {
+          ...inputs,
+          ...(updatedPassword && { password: updatedPassword }),
+          ...(avatar && { avatar }),
+        },
+      });
+  
+      const { password: userPassword, ...rest } = updatedUser;
+  
+      res.status(200).json(rest);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Failed to update users!" });
     }
-}
+  };
+  
+  
 
 
-
-
-export const deleteUser = async (req, res) => {
-    try{
-
-    }catch(err){
-        console.log(err)
-        res.status(500).json({message:"Failed to delete user"})
+  export const deleteUser = async (req, res) => {
+    const id = Number(req.params.id);
+    const tokenUserId = Number(req.userId);;
+  
+    if (id !== tokenUserId) {
+      return res.status(403).json({ message: "Not Authorized!" });
     }
-}
-
+  
+    try {
+      await prisma.user.delete({
+        where: { id:Number(id) },
+      });
+      res.status(200).json({ message: "User deleted" });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: "Failed to delete users!" });
+    }
+  };
