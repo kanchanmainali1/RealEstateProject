@@ -24,7 +24,6 @@ model User{
 model Post{
   id    Int @id @default(autoincrement())// If it's a string (UUID)
  title String
-  username  String @unique
   price Int
  images   String[]
   address    String
@@ -38,6 +37,7 @@ model Post{
   createdAt DateTime @default(now())
   user  User @relation(fields: [userId], references: [id])
   userId Int 
+  postDetail PostDetail?
  } 
 
 enum Type{
@@ -49,4 +49,26 @@ enum Property{
   apartment
   land
  
+ }
+
+ model PostDetail{
+
+  id    Int @id @default(autoincrement())
+  // If it's a string (UUID)
+  desc String
+  utilities  String ?
+  pet  String ?
+  income  String ?
+  size  Int ?
+  school  Int ?
+  bus  Int?
+  restaurant Int?
+
+  post  Post @relation(fields: [postId], references: [id])
+
+    postId Int @unique
+
+
+  
+
  }

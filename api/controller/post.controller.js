@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma";
+import prisma from "../lib/prisma.js";
 
 export const getPosts = async (req, res) => {
 try{
@@ -20,6 +20,16 @@ export const getPost = async (req, res) => {
         const post=await prisma.post.findUnique({
             where:{
                 id:Number(req.params.id)
+            },
+            include:{
+                postDetail: true,
+                user: {
+                    select:{
+                        username:true,
+                        avatar:true
+                    }
+
+                },
             }
         })
 
@@ -37,16 +47,18 @@ export const getPost = async (req, res) => {
         const body = req.body;
         const tokenUserId = req.userId;
         try{
-            const post=await prisma.post.create({
+            const newpost=await prisma.post.create({
                 data:{
-                    title:req.body.title,
-                    desc:req.body.desc,
-                    photo:req.body.photo,
-                    userId:req.userId
+                   ...body.postData,
+                   userId: tokenUserId,
+                   postDetail:{
+                    create: body.postDetail,
+
+                   }
                 }
             })
         
-        res.status(200).json({message:"Posts added successfully",post})
+        res.status(200).json({message:"Posts added successfully",newpost})
         
         }
         catch(err){ 
@@ -69,7 +81,21 @@ export const getPost = async (req, res) => {
             }
 
             export const deletePost = async (req, res) => {
+                const id =req.params.id
+                const tokenUserId=req.userId
                 try{
+                    const post=await prisma.post.findUnique({
+                      where:{
+                        id:Number(req.params.id)
+                    }
+                    })
+
+                    if(post.userId!=tokenUserId){
+                        return res.status(403).json({message:"Not Authorized"})
+                    }
+                    await prisma.post.delete({
+                        where:{id:Number(req.params.id)}
+                    })
                 
                 res.status(200).json({message:"Posts deleted successfully"})
                 
