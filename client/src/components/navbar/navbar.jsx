@@ -3,6 +3,7 @@ import "./navbar.scss";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
+
 function Navbar() {
   const [open, setOpen] = useState(false);
   const {currentUser} = useContext(AuthContext)
@@ -16,8 +17,8 @@ function Navbar() {
           <span>HomeHeaven</span>
         </a>
         <a href="/">Home</a>
-        <a href="/">About</a>
-        <a href="/">Contact</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
         
       </div>
       <div className="right">
@@ -35,10 +36,11 @@ function Navbar() {
           </div>
         ) : (
           <>
-            <a href="/">Sign in</a>
-            <a href="/" className="register">
+            <a href="/login">Sign in</a>
+            <a href="/register" className="register">
               Sign up
             </a>
+            
           </>
         )}
         <div className="menuIcon">

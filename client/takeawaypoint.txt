@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -35,6 +38,7 @@ enum Type {
 enum Property {
   apartment
   house
+  condo
   land
 }
 
@@ -72,5 +76,31 @@ model User {
   createdAt  DateTime    @default(now())
   posts      Post[]
   savedPosts SavedPost[]
- 
+  chats      Chat[]      @relation("UserChats")
+}
+
+model Chat {
+  id          Int         @id @default(autoincrement())
+  users       ChatUser[]
+  createdAt   DateTime    @default(now())
+  seenBy      Int[]
+  messages    Message[]
+  lastMessage String?
+}
+
+model ChatUser {
+  id      Int   @id @default(autoincrement())
+  userId  Int
+  chatId  Int
+  user    User  @relation(fields: [userId], references: [id])
+  chat    Chat  @relation(fields: [chatId], references: [id])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  text      String
+  userId    Int
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    Int
+  createdAt DateTime @default(now())
 }

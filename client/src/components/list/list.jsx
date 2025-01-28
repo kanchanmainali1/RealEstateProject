@@ -1,16 +1,19 @@
+import './list.scss';
+import Card from '../card/Card';
 
-import './list.scss'
-import Card from"../card/Card"
-import {listData} from"../../lib/dummydata"
+function List({ posts }) { 
+  if (!Array.isArray(posts)) {
+    console.error("The 'posts' prop must be an array. Received:", posts);
+    return <div>No posts available!</div>; 
+  }
 
-function List(){
   return (
-    <div className='list'>
-      {listData.map(item=>(
-        <Card key={item.id} item={item}/>
+    <div className="list">
+      {posts.map((item) => (
+        <Card key={item.id} item={item} />
       ))}
     </div>
-  )
+  );
 }
 
-export default List
+export default List;

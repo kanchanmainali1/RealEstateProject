@@ -52,12 +52,14 @@
           align-items: center;
           gap: 20px;
         }
+
         button{
-          padding: 12px 24px;
-          background-color: #fece51;
-          cursor: pointer;
-          border: none;
           width: 100px;
+          background-color: #fece51;
+          border: none;
+          color: white;
+          padding: 10px 20px;
+          cursor: pointer;
           border-radius: 5px;
         }
 
