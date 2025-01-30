@@ -33,7 +33,7 @@ function Register() {
         password,
       });
       console.log(res.data);
-      //navigate("/login");
+      navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
     } finally {

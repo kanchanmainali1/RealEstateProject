@@ -32,7 +32,7 @@ function Login() {
       navigate("/");
     } catch (err) {
       //console.log(err);
-      setError( err.response.data.message);
+      setError(err.response?.data?.message || "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
