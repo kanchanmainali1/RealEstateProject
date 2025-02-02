@@ -1,9 +1,10 @@
-
 @import "../../responsive.scss";
 
 .searchBar {
   .type {
-      button {
+
+
+    button {
       padding: 16px 36px;
       border: 1px solid #999;
       border-bottom: none;
@@ -71,24 +72,26 @@
       }
     }
 
-    button {
-      border: none;
-      cursor: pointer;
-      
-      background-color: #fece51;
-      
+    a{
       flex: 1;
+      background-color: #fece51;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      @include sm{
-        padding: 10px;
+      button {
+        border: none;
+        cursor: pointer;
+        background-color: #fece51;
         
-      }
-
-      img {
-        width: 28px;
-        height: 28px;
+        @include sm{
+          padding: 10px;
+        }
         
-        
+        img {
+          width: 24px;
+          height: 24px;
+        }
       }
     }
   }

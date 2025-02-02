@@ -1,5 +1,5 @@
+import Card from '../card/card';
 import './list.scss';
-import Card from '../card/Card';
 
 function List({ posts }) { 
   if (!Array.isArray(posts)) {

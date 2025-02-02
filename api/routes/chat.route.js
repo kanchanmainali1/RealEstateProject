@@ -5,7 +5,7 @@ import {
   addChat,
   readChat,
 } from "../controller/chat.controller.js";
-import { verifyToken } from "../middleware/verifyToken.js";
+import { verifyToken } from "../middleware/verifytoken.js";
 
 const router = express.Router();
 

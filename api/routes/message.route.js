@@ -2,7 +2,7 @@ import express from "express";
 import {
   addMessage
 } from "../controller/message.controller.js";
-import {verifyToken} from "../middleware/verifyToken.js";
+import {verifyToken} from "../middleware/verifytoken.js";
 
 const router = express.Router();
 

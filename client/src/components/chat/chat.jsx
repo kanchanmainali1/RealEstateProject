@@ -3,13 +3,13 @@ import "./chat.scss";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
 import { format } from "timeago.js";
-// import { SocketContext } from "../../context/SocketContext";
-//  import { useNotificationStore } from "../../lib/notificationStore";
+import { SocketContext } from "../../context/SocketContext";
+import { useNotificationStore } from "../../lib/notificationStore";
 
 function Chat({ chats }) {
   const [chat, setChat] = useState(null);
   const { currentUser } = useContext(AuthContext);
-  // const { socket } = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   const messageEndRef = useRef();
 
@@ -51,27 +51,27 @@ function Chat({ chats }) {
     }
   };
 
-  // useEffect(() => {
-  //   const read = async () => {
-  //     try {
-  //       await apiRequest.put("/chats/read/" + chat.id);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
+  useEffect(() => {
+    const read = async () => {
+      try {
+        await apiRequest.put("/chats/read/" + chat.id);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-  //   if (chat && socket) {
-  //     socket.on("getMessage", (data) => {
-  //       if (chat.id === data.chatId) {
-  //         setChat((prev) => ({ ...prev, messages: [...prev.messages, data] }));
-  //         read();
-  //       }
-  //     });
-  //   }
-  //   return () => {
-  //     socket.off("getMessage");
-  //   };
-  // }, [socket, chat]);
+    if (chat && socket) {
+      socket.on("getMessage", (data) => {
+        if (chat.id === data.chatId) {
+          setChat((prev) => ({ ...prev, messages: [...prev.messages, data] }));
+          read();
+        }
+      });
+    }
+    return () => {
+      socket.off("getMessage");
+    };
+  }, [socket, chat]);
 
   return (
     <div className="chat">
@@ -89,7 +89,7 @@ function Chat({ chats }) {
             }}
             onClick={() => handleOpenChat(c.id, c.receiver)}
           >
-            <img src={c.receiver.avatar || "/noavatar.png"} alt="" />
+            <img src={c.receiver.avatar || "/noavatar.jpg"} alt="" />
             <span>{c.receiver.username}</span>
             <p>{c.lastMessage}</p>
           </div>

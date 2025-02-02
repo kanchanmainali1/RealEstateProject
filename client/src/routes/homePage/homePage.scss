@@ -3,8 +3,6 @@
 .homePage {
   display: flex;
   height: 100%;
-  
-  overflow-y: auto;
 
   .textContainer {
     flex: 3;
@@ -14,7 +12,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 40px;
+      gap: 50px;
       height: 100%;
 
       @include lg{
@@ -43,11 +41,10 @@
 
         @include sm {
           display: none;
-          
         }
 
         h1 {
-          font-size: 32px;
+          font-size: 36px;
 
           @include lg {
             font-size: 32px;

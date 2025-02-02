@@ -1,7 +1,7 @@
 import "./profilePage.scss";
 import apiRequest from "../../lib/apiRequest";
 import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
-import { Suspense, useContext } from "react";
+import { Suspense, useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Chat from "../../components/chat/chat";
 import List from "../../components/list/list";
@@ -12,6 +12,9 @@ function ProfilePage() {
  
   const { updateUser, currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [receiverId, setReceiverId] = useState(null);
+
 
   const handleLogout = async () => {
     try {
@@ -22,6 +25,11 @@ function ProfilePage() {
       console.error("Logout Error:", err);
     }
   };
+  const handleChatClick = (id) => {
+    setReceiverId(id);
+    setIsChatOpen(true);
+  };
+
 
   if (!data) {
     return <p>Loading profile data...</p>;
@@ -79,6 +87,7 @@ function ProfilePage() {
               {(postResponse) =>
                 postResponse?.data?.savedPosts?.length ? (
                   <List posts={postResponse.data.savedPosts} />
+                  
                 ) : (
                   <p>No saved posts found.</p>
                 )
@@ -93,13 +102,12 @@ function ProfilePage() {
         <div className="wrapper">
           <Suspense fallback={<p>Loading...</p>}>
             <Await resolve={data?.chatResponse} errorElement={<p>Error loading chats!</p>}>
-              {(chatResponse) =>
-                chatResponse?.data?.length ? (
-                  <Chat chats={chatResponse.data} />
-                ) : (
-                  <p>No chats found.</p>
-                )
-              }
+            {isChatOpen ? (
+            <Chat receiverId={receiverId} currentUser={currentUser} onClose={() => setIsChatOpen(false)} />
+          ) : (
+            <p>Select a conversation</p>
+          )}
+
             </Await>
           </Suspense>
         </div>
