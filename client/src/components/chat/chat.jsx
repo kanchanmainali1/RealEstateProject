@@ -19,9 +19,15 @@ function Chat({ chats }) {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat]);
 
-  const handleOpenChat = async (id, receiver) => {
+  // Helper function to get the receiver (the other user in the chat)
+  const getReceiver = (users) => {
+    return users.find((user) => user.id !== currentUser.id);
+  };
+
+  const handleOpenChat = async (id) => {
     try {
       const res = await apiRequest("/chats/" + id);
+      const receiver = getReceiver(res.data.users);
       if (!res.data.seenBy.includes(currentUser.id)) {
         decrease();
       }
@@ -77,23 +83,26 @@ function Chat({ chats }) {
     <div className="chat">
       <div className="messages">
         <h1>Messages</h1>
-        {chats?.map((c) => (
-          <div
-            className="message"
-            key={c.id}
-            style={{
-              backgroundColor:
-                c.seenBy.includes(currentUser.id) || chat?.id === c.id
-                  ? "white"
-                  : "#fecd514e",
-            }}
-            onClick={() => handleOpenChat(c.id, c.receiver)}
-          >
-            <img src={c.receiver.avatar || "/noavatar.jpg"} alt="" />
-            <span>{c.receiver.username}</span>
-            <p>{c.lastMessage}</p>
-          </div>
-        ))}
+        {chats?.map((c) => {
+          const receiver = getReceiver(c.users);
+          return (
+            <div
+              className="message"
+              key={c.id}
+              style={{
+                backgroundColor:
+                  c.seenBy.includes(currentUser.id) || chat?.id === c.id
+                    ? "white"
+                    : "#fecd514e",
+              }}
+              onClick={() => handleOpenChat(c.id)}
+            >
+              <img src={receiver.avatar || "/noavatar.jpg"} alt="" />
+              <span>{receiver.username}</span>
+              <p>{c.lastMessage}</p>
+            </div>
+          );
+        })}
       </div>
       {chat && (
         <div className="chatBox">

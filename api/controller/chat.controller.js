@@ -7,19 +7,34 @@ export const getChats = async (req, res) => {
     const chats = await prisma.chat.findMany({
       where: {
         users: {
-          some: { id: tokenUserId }, 
+          some: {
+            id: tokenUserId,
+          },
         },
       },
       include: {
-        users: { 
-          select: { id: true, username: true, avatar: true } 
+        users: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
+        },
+        messages: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
         },
       },
     });
 
-   
+    // Attach the last message to each chat
     chats.forEach((chat) => {
-      chat.receiver = chat.users.find((user) => user.id !== tokenUserId);
+      const lastMessage = chat.messages[0];
+      if (lastMessage) {
+        chat.lastMessage = lastMessage.text;
+      }
     });
 
     res.status(200).json(chats);
@@ -34,10 +49,16 @@ export const getChat = async (req, res) => {
 
   try {
     const chat = await prisma.chat.findUnique({
-      where: { id: req.params.id },
+      where: {
+        id: req.params.id,
+      },
       include: {
-        users: { 
-          select: { id: true, username: true, avatar: true } 
+        users: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true,
+          },
         },
         messages: {
           orderBy: {
@@ -47,14 +68,19 @@ export const getChat = async (req, res) => {
       },
     });
 
-    if (!chat || !chat.users.some((user) => user.id === tokenUserId)) {
-      return res.status(403).json({ message: "Unauthorized or chat not found" });
+    if (!chat || !chat.users.some(user => user.id === tokenUserId)) {
+      return res.status(403).json({ message: "Forbidden" });
     }
 
+    // Update 'seenBy' field
     await prisma.chat.update({
-      where: { id: req.params.id },
+      where: {
+        id: req.params.id,
+      },
       data: {
-        seenBy: { push: tokenUserId },
+        seenBy: {
+          push: tokenUserId,
+        },
       },
     });
 
@@ -67,18 +93,27 @@ export const getChat = async (req, res) => {
 
 export const addChat = async (req, res) => {
   const tokenUserId = req.userId;
-  const receiverId = req.body.receiverId;
+  const { receiverId } = req.body;
 
   try {
+    // Check if chat already exists between the users
+    const existingChat = await prisma.chat.findFirst({
+      where: {
+        users: {
+          hasSome: [tokenUserId, receiverId],
+        },
+      },
+    });
+
+    if (existingChat) {
+      return res.status(200).json(existingChat);
+    }
+
+    // Create a new chat if no existing one
     const newChat = await prisma.chat.create({
       data: {
         users: {
-          connect: [{ id: tokenUserId }, { id: receiverId }], 
-        },
-      },
-      include: {
-        users: { 
-          select: { id: true, username: true, avatar: true } 
+          connect: [{ id: tokenUserId }, { id: receiverId }],
         },
       },
     });
@@ -95,18 +130,15 @@ export const readChat = async (req, res) => {
 
   try {
     const chat = await prisma.chat.update({
-      where: { id: req.params.id },
-      data: {
-        seenBy: { push: tokenUserId },
+      where: {
+        id: req.params.id,
       },
-      include: {
-        users: { select: { id: true } },
+      data: {
+        seenBy: {
+          set: [tokenUserId],
+        },
       },
     });
-
-    if (!chat.users.some((user) => user.id === tokenUserId)) {
-      return res.status(403).json({ message: "Unauthorized to mark chat as read" });
-    }
 
     res.status(200).json(chat);
   } catch (err) {

@@ -1,9 +1,8 @@
+
 import { Link } from "react-router-dom";
 import "./card.scss";
 
-function Card({ item, onDelete}) {
-  console.log("onDelete function:", onDelete); // Debugging line
-
+function Card({ item }) {
   return (
     <div className="card">
       <Link to={`/${item.id}`} className="imageContainer">
@@ -17,7 +16,7 @@ function Card({ item, onDelete}) {
           <img src="/pin.png" alt="" />
           <span>{item.address}</span>
         </p>
-        <p className="price">$ {item.price}</p>
+        <p className="price">NRs.{item.price}</p>
         <div className="bottom">
           <div className="features">
             <div className="feature">
@@ -31,10 +30,10 @@ function Card({ item, onDelete}) {
           </div>
           <div className="icons">
             <div className="icon">
-              <img src="/edit.png" alt="" />
+              <img src="/save.png" alt="" />
             </div>
-            <div className="icon" onClick={() => onDelete && onDelete(item.id)}>
-              <img src="/delete.png" alt="" />
+            <div className="icon">
+              <img src="/chat.png" alt="" />
             </div>
           </div>
         </div>
