@@ -1,14 +1,14 @@
 import prisma from "../lib/prisma.js";
 
 export const getChats = async (req, res) => {
-  const tokenUserId = req.userId;
+  const tokenUserId = Number(req.userId); // Ensure it's an integer
 
   try {
     const chats = await prisma.chat.findMany({
       where: {
         users: {
           some: {
-            id: tokenUserId,
+            id: tokenUserId, // Prisma expects an Int
           },
         },
       },
@@ -39,18 +39,19 @@ export const getChats = async (req, res) => {
 
     res.status(200).json(chats);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Failed to get chats!" });
   }
 };
 
 export const getChat = async (req, res) => {
-  const tokenUserId = req.userId;
+  const tokenUserId = Number(req.userId);
+  const chatId = Number(req.params.id); // Convert id to integer
 
   try {
     const chat = await prisma.chat.findUnique({
       where: {
-        id: req.params.id,
+        id: chatId, // Use the integer ID
       },
       include: {
         users: {
@@ -75,7 +76,7 @@ export const getChat = async (req, res) => {
     // Update 'seenBy' field
     await prisma.chat.update({
       where: {
-        id: req.params.id,
+        id: chatId,
       },
       data: {
         seenBy: {
@@ -86,21 +87,23 @@ export const getChat = async (req, res) => {
 
     res.status(200).json(chat);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Failed to get chat!" });
   }
 };
 
 export const addChat = async (req, res) => {
-  const tokenUserId = req.userId;
-  const { receiverId } = req.body;
+  const tokenUserId = Number(req.userId);
+  const receiverId = Number(req.body.receiverId);
 
   try {
     // Check if chat already exists between the users
     const existingChat = await prisma.chat.findFirst({
       where: {
         users: {
-          hasSome: [tokenUserId, receiverId],
+          every: {
+            id: { in: [tokenUserId, receiverId] }, // Properly check both users
+          },
         },
       },
     });
@@ -115,34 +118,36 @@ export const addChat = async (req, res) => {
         users: {
           connect: [{ id: tokenUserId }, { id: receiverId }],
         },
+        seenBy: [tokenUserId], // Mark chat as seen by the creator
       },
     });
 
-    res.status(200).json(newChat);
+    res.status(201).json(newChat);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Failed to add chat!" });
   }
 };
 
 export const readChat = async (req, res) => {
-  const tokenUserId = req.userId;
+  const tokenUserId = Number(req.userId);
+  const chatId = Number(req.params.id);
 
   try {
     const chat = await prisma.chat.update({
       where: {
-        id: req.params.id,
+        id: chatId,
       },
       data: {
         seenBy: {
-          set: [tokenUserId],
+          push: tokenUserId,
         },
       },
     });
 
     res.status(200).json(chat);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: "Failed to read chat!" });
   }
 };

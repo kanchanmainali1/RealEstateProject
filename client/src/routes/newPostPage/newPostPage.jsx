@@ -115,6 +115,7 @@ function NewPostPage() {
             <div className="item">
               <label htmlFor="utilities">Utilities Policy</label>
               <select name="utilities">
+                <option value="owner">None</option>
                 <option value="owner">Owner is responsible</option>
                 <option value="tenant">Tenant is responsible</option>
                 <option value="shared">Shared</option>
@@ -123,6 +124,7 @@ function NewPostPage() {
             <div className="item">
               <label htmlFor="pet">Pet Policy</label>
               <select name="pet">
+                <option value="allowed">None</option>
                 <option value="allowed">Allowed</option>
                 <option value="not-allowed">Not Allowed</option>
               </select>

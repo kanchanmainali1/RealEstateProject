@@ -78,9 +78,11 @@ function SinglePage() {
               <div className="featureText">
                 <span>Pet Policy</span>
                 <p>
-                  {post?.postDetail?.pet === "allowed"
+                    {post?.postDetail?.pet === "allowed"
                     ? "Pets Allowed"
-                    : "Pets not Allowed"}
+                    : post?.postDetail?.pet === "notAllowed"
+                    ? "Pets not Allowed"
+                    : "Not Applicable"}
                 </p>
               </div>
             </div>
