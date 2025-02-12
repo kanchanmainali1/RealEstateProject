@@ -1,83 +1,237 @@
-@import "../../responsive.scss";
-
 .homePage {
-  display: flex;
-  height: 100%;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  padding: 0;
+  overflow: hidden;
 
-  .textContainer {
-    flex: 3;
+  /* Hero Section */
+  .heroSection {
+    background: url('/housekey.jpg') center bottom/cover no-repeat;
+    background-attachment: fixed; // Parallax effect
+    position: relative;
+    padding: 200px 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 
-    .wrapper {
-      padding-right: 100px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 50px;
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       height: 100%;
+      background: linear-gradient(135deg, rgba(30, 60, 114, 0.8), rgba(42, 82, 152, 0.8)); // Gradient overlay
+    }
 
-      @include lg{
-        padding-right: 50px;
-      }
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      transform: translateY(-20px);
 
-      @include md{
-        padding: 0;
-      }
-
-      @include sm{
-        justify-content: flex-start;
+      .hometext {
+        padding-bottom: 30px;
       }
 
       .title {
-        font-size: 64px;
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        animation: fadeIn 1s ease-in-out;
+        color: white;
+        background: linear-gradient(135deg, #ffdd57, #ffcc29); // Gradient text
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-        @include lg {
-          font-size: 48px;
+      .subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        animation: fadeIn 1.5s ease-in-out;
+        color: white;
+
+        span {
+          color: #ffdd57; // Golden accent for highlighted text
+          font-weight: 700;
         }
       }
 
-      .boxes {
-        display: flex;
-        justify-content: space-between;
-
-        @include sm {
-          display: none;
-        }
-
-        h1 {
-          font-size: 36px;
-
-          @include lg {
-            font-size: 32px;
-          }
-        }
-
-        h2 {
-          font-size: 20px;
-          font-weight: 300;
-        }
+      .searchContainer {
+        max-width: 700px;
+        margin: 0 auto;
+        animation: slideUp 1s ease-in-out;
       }
     }
   }
 
-  .imgContainer {
-    flex: 2;
-    background-color: #fcf5f3;
-    position: relative;
-    display: flex;
-    align-items: center;
+  /* Explore Section (Photo Gallery) */
+  .photoGallery {
+  padding: 80px 20px;
+  background: #f9f9f9; // Light gray background
+  text-align: center;
 
-    @include md {
-      display: none;
-    }
+  h2 {
+    font-size: 2.5rem;
+    color: #2c3e50; // Dark blue-gray for heading
+    margin-bottom: 40px;
+    animation: fadeIn 1s ease-in-out; // Fade-in animation
+  }
 
-    img {
-      width: 115%;
-      position: absolute;
-      right: 0;
+  .galleryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px; // Increased gap for better spacing
+    max-width: 1200px;
+    margin: 0 auto;
 
-      @include lg {
-        width: 105%;
+    .galleryItem {
+      position: relative;
+      border-radius: 15px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer; // Added cursor pointer for better UX
+
+      &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); // Enhanced shadow on hover
+
+        img {
+          transform: scale(1.1); // Zoom effect on hover
+        }
+
+        .overlayText {
+          background: rgba(228, 199, 38, 0.9); // Golden accent for hover
+          padding: 25px; // Slightly increased padding on hover
+        }
+      }
+
+      img {
+        width: 100%;
+        height: 300px; // Adjusted height for better proportion
+        object-fit: cover;
+        transition: transform 0.3s ease; // Added transition for smooth hover effect
+      }
+
+      .overlayText {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.7); // Dark overlay for text
+        color: white;
+        padding: 20px; // Increased padding for better readability
+        font-size: 1.5rem; // Increased font size
+        text-align: center;
+        transition: background 0.3s ease, padding 0.3s ease; // Added transition for smooth hover effect
       }
     }
+  }
+}
+  /* Recommendations Section */
+  .recommendationsSection {
+    padding: 80px 20px;
+    background: #fff; // White background
+    text-align: center;
+
+    h2 {
+      font-size: 2.5rem;
+      color: #2c3e50; // Dark blue-gray for heading
+      margin-bottom: 40px;
+      animation: fadeIn 1s ease-in-out; // Fade-in animation
+    }
+
+    .propertiesGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      .propertyCard {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+
+        &:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); // Enhanced shadow on hover
+
+          .details button {
+            background: #1a5bbf; // Darker blue on hover
+          }
+        }
+
+        img {
+          width: 100%;
+          height: 250px;
+          object-fit: cover;
+          transition: transform 0.3s ease; // Smooth transition for image
+        }
+
+        .details {
+          padding: 20px;
+
+          h3 {
+            font-size: 1.5rem;
+            color: #2c3e50; // Dark blue-gray for property title
+            margin-bottom: 10px;
+          }
+
+          p {
+            font-size: 1.2rem;
+            color: #e74c3c; // Red for price to draw attention
+            margin-bottom: 20px;
+          }
+
+          button {
+            background: #2575fc; // Vibrant blue for button
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+          }
+        }
+
+        .badge {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          background: #ffdd57; // Golden accent for badge
+          color: #2c3e50; // Dark blue-gray text
+          padding: 5px 10px;
+          border-radius: 5px;
+          font-size: 0.9rem;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

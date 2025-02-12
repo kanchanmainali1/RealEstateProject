@@ -1,8 +1,9 @@
 import "./register.scss";
 import { Link, useNavigate } from "react-router-dom";
-
 import { useState } from "react";
 import apiRequest from "../../lib/apiRequest";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Register() {
   const [error, setError] = useState("");
@@ -32,10 +33,32 @@ function Register() {
         email,
         password,
       });
-      console.log(res.data);
-      navigate("/login");
+
+      toast.success("Registration successful! Redirecting to login...", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
+
+      toast.error(err.response?.data?.message || "Registration failed.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -46,17 +69,44 @@ function Register() {
       <div className="formContainer">
         <form onSubmit={handleSubmit}>
           <h1>Create an Account</h1>
-          <input name="username" type="text" placeholder="Username" />
-          <input name="email" type="text" placeholder="Email" />
-          <input name="password" type="password" placeholder="Password" />
-          <button disabled={isLoading}>{isLoading ? "Registering..." : "Register"}</button>
-          {error && <span>{error}</span>}
-          <Link to="/login">Do you have an account?</Link>
+          <p>Please register to continue</p>
+          <div className="inputGroup">
+            <input
+              name="username"
+              type="text"
+              placeholder="Username"
+              required
+            />
+            <span className="inputIcon">👤</span>
+          </div>
+          <div className="inputGroup">
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              required
+            />
+            <span className="inputIcon">📧</span>
+          </div>
+          <div className="inputGroup">
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              required
+            />
+            <span className="inputIcon">🔒</span>
+          </div>
+          <button disabled={isLoading}>
+            {isLoading ? "Registering..." : "Register"}
+          </button>
+          {error && <span className="error">{error}</span>}
+          <div className="links">
+            <Link to="/login">Already have an account? Login</Link>
+          </div>
         </form>
       </div>
-      <div className="imgContainer">
-        <img src="/bg.png" alt="" />
-      </div>
+      <ToastContainer />
     </div>
   );
 }

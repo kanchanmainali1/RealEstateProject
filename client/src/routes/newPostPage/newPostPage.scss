@@ -1,6 +1,8 @@
 .newPostPage {
     height: 100%;
     display: flex;
+    padding-top: 20px;
+ padding-left: 10px;
   
     .formContainer {
       flex: 3;
@@ -45,7 +47,8 @@
             }
           }
           .sendButton {
-            width: 30%;
+            width:20%;
+            padding: 20px;
             border-radius: 5px;
             border: none;
             background-color: teal;

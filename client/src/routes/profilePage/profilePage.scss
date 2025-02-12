@@ -3,6 +3,8 @@
 .profilePage {
   display: flex;
   height: 100%;
+  padding-top: 20px;
+  padding-left: 10px;
 
   @include md{
     flex-direction: column;
@@ -74,7 +76,7 @@
   }
   .chatContainer {
     flex: 2;
-    background-color: #fcf5f3;
+    // background-color: #fcf5f3;
     height: 100%;
 
     @include md{

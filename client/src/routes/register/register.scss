@@ -1,61 +1,113 @@
 .registerPage {
-    height: 100%;
-    display: flex;
-  
-    .formContainer {
-      flex: 3;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-  
-        input {
-          padding: 20px;
-          border: 1px solid gray;
-          border-radius: 5px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3c72, #2a5298); 
+  padding: 20px;
+
+  .formContainer {
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px); 
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 32px;
+      color: white;
+      font-weight: 700;
+    }
+
+    p {
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+    }
+
+    .inputGroup {
+      position: relative;
+      margin-bottom: 20px;
+
+      input {
+        width: 100%;
+        padding: 12px 40px 12px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        transition: border-color 0.3s ease;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.6);
         }
-  
-        button {
-          padding: 20px;
-          border-radius: 5px;
-          border: none;
-          background-color: teal;
-          color: white;
-          font-weight: bold;
-          cursor: pointer;
-  
-          &:disabled {
-            background-color: #bed9d8;
-            cursor: not-allowed;
-          }
-        }
-  
-        span {
-          color: rgba(255, 0, 0, 0.591);
-        }
-  
-        a {
-          font-size: 14px;
-          color: gray;
-          border-bottom: 1px solid gray;
-          width: max-content;
+
+        &:focus {
+          border-color: #ffdd57; 
         }
       }
+
+      .inputIcon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 18px;
+      }
     }
-  
-    .imgContainer {
-      flex: 2;
-      background-color: #fcf5f3;
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ffdd57; 
+      color: #1e3c72; 
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #ffcc29; 
+      }
+
+      &:disabled {
+        background-color: rgba(255, 221, 87, 0.6);
+        cursor: not-allowed;
+      }
+    }
+
+    .error {
+      color: #ff4d4d;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .links {
+      margin-top: 20px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      img {
-        width: 100%;
+      flex-direction: column;
+      gap: 10px;
+
+      a {
+        color: #ffdd57; 
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #ffcc29; 
+        }
       }
     }
   }
+}
