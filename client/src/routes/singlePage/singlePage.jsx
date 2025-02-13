@@ -43,6 +43,10 @@ function SinglePage() {
                 <div className="price">
                   NRs.{post?.price || "0"}
                 </div>
+                <div className="propertyType">
+                  <span>Type: </span>
+                  <strong>{post?.type === "rent" ? "For Rent" : "For Sale"}</strong>
+                </div>
               </div>
               <div className="user">
                 <img src={post?.user?.avatar || "/noavatar.jpg"} alt="User Avatar" />
@@ -62,30 +66,34 @@ function SinglePage() {
         <div className="wrapper">
           <p className="title">General</p>
           <div className="listVertical">
-            <div className="feature">
-              <img src="/utility.png" alt="Utilities" />
-              <div className="featureText">
-                <span>Utilities</span>
-                <p>
-                  {post?.postDetail?.utilities === "owner"
-                    ? "Owner is responsible"
-                    : "Tenant is responsible"}
-                </p>
-              </div>
-            </div>
-            <div className="feature">
-              <img src="/pet.png" alt="Pet Policy" />
-              <div className="featureText">
-                <span>Pet Policy</span>
-                <p>
-                    {post?.postDetail?.pet === "allowed"
-                    ? "Pets Allowed"
-                    : post?.postDetail?.pet === "notAllowed"
-                    ? "Pets not Allowed"
-                    : "Not Applicable"}
-                </p>
-              </div>
-            </div>
+            {post?.type === "rent" && (
+              <>
+                <div className="feature">
+                  <img src="/utility.png" alt="Utilities" />
+                  <div className="featureText">
+                    <span>Utilities</span>
+                    <p>
+                      {post?.postDetail?.utilities === "owner"
+                        ? "Owner is responsible"
+                        : "Tenant is responsible"}
+                    </p>
+                  </div>
+                </div>
+                <div className="feature">
+                  <img src="/pet.png" alt="Pet Policy" />
+                  <div className="featureText">
+                    <span>Pet Policy</span>
+                    <p>
+                      {post?.postDetail?.pet === "allowed"
+                        ? "Pets Allowed"
+                        : post?.postDetail?.pet === "notAllowed"
+                        ? "Pets not Allowed"
+                        : "Not Applicable"}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
             <div className="feature">
               <img src="/fee.png" alt="Income Policy" />
               <div className="featureText">

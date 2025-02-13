@@ -1,26 +1,21 @@
 import prisma from "../lib/prisma.js";
 import jwt from "jsonwebtoken";
 
-//  Get all posts
+// Get all posts
 export const getPosts = async (req, res) => {
-  const query = req.query;
-  console.log("Query Params:", query);  // Debugging log
-
+  const { city, type, bedroom, minPrice, maxPrice } = req.query;
   try {
     const posts = await prisma.post.findMany({
       where: {
-        city: query.city && query.city !== "" ? query.city : undefined,  // Ignore empty strings
-        type: query.type || undefined,
-        bedroom: query.bedroom && !isNaN(query.bedroom) ? parseInt(query.bedroom, 10) : undefined,
+        city: city && city.trim() !== "" ? city : undefined,
+        type: type || undefined,
+        bedroom: bedroom && !isNaN(bedroom) ? parseInt(bedroom, 10) : undefined,
         price: {
-          gte: query.minPrice && query.minPrice !== "0" ? parseInt(query.minPrice, 10) : undefined,
-          lte: query.maxPrice && query.maxPrice !== "0" ? parseInt(query.maxPrice, 10) : undefined,
+          gte: minPrice && minPrice !== "0" ? parseInt(minPrice, 10) : undefined,
+          lte: maxPrice && maxPrice !== "0" ? parseInt(maxPrice, 10) : undefined,
         },
       },
     });
-
-    console.log("Fetched Posts:", posts);  // Debugging log
-
     res.status(200).json(posts);
   } catch (err) {
     console.error("Error fetching posts:", err);
@@ -28,9 +23,10 @@ export const getPosts = async (req, res) => {
   }
 };
 
-//  Get single post with authentication check
+// Get single post with authentication check
 export const getPost = async (req, res) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ message: "Invalid post ID" });
 
   try {
     const post = await prisma.post.findUnique({
@@ -41,40 +37,33 @@ export const getPost = async (req, res) => {
       },
     });
 
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
     const token = req.cookies?.token;
+    if (!token) return res.status(200).json({ ...post, isSaved: false });
 
-    if (token) {
-      jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
-        if (!err) {
-          const saved = await prisma.savedPost.findUnique({
-            where: {
-              userId_postId: {
-                postId: id,
-                userId: payload.id,
-              },
-            },
-          });
+    jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+      if (err) return res.status(200).json({ ...post, isSaved: false });
 
-          return res.status(200).json({ ...post, isSaved: !!saved });
-        }
+      const saved = await prisma.savedPost.findUnique({
+        where: {
+          userId_postId: { postId: id, userId: payload.id },
+        },
       });
-    } else {
-      res.status(200).json({ ...post, isSaved: false });
-    }
+
+      res.status(200).json({ ...post, isSaved: !!saved });
+    });
   } catch (err) {
     console.error("Error fetching post:", err);
     res.status(500).json({ message: "Failed to get post" });
   }
 };
 
-//  Add new post
+// Add new post
 export const addPost = async (req, res) => {
   const { postData, postDetail } = req.body;
   const tokenUserId = req.userId;
+  if (!tokenUserId) return res.status(401).json({ message: "Unauthorized" });
 
   try {
     const newPost = await prisma.post.create({
@@ -84,7 +73,6 @@ export const addPost = async (req, res) => {
         postDetail: { create: postDetail },
       },
     });
-
     res.status(201).json(newPost);
   } catch (err) {
     console.error("Error creating post:", err);
@@ -92,18 +80,18 @@ export const addPost = async (req, res) => {
   }
 };
 
-//  Update post
+// Update post
 export const updatePost = async (req, res) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ message: "Invalid post ID" });
+
   const { postData, postDetail } = req.body;
   const tokenUserId = req.userId;
+  if (!tokenUserId) return res.status(401).json({ message: "Unauthorized" });
 
   try {
     const existingPost = await prisma.post.findUnique({ where: { id } });
-
-    if (!existingPost) {
-      return res.status(404).json({ message: "Post not found" });
-    }
+    if (!existingPost) return res.status(404).json({ message: "Post not found" });
 
     if (existingPost.userId !== tokenUserId) {
       return res.status(403).json({ message: "Not authorized to update this post" });
@@ -124,34 +112,37 @@ export const updatePost = async (req, res) => {
   }
 };
 
-//  Delete post
+// Delete post
 export const deletePost = async (req, res) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) return res.status(400).json({ message: "Invalid post ID" });
+
   const tokenUserId = req.userId;
+  if (!tokenUserId) return res.status(401).json({ message: "Unauthorized" });
 
   try {
     const post = await prisma.post.findUnique({
       where: { id },
-      include: { postDetail: true }, //  Include postDetail to check if it exists
+      include: { postDetail: true },
     });
 
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (post.userId !== tokenUserId) {
       return res.status(403).json({ message: "Not authorized to delete this post" });
     }
 
-    //  Delete related PostDetail first
-    if (post.postDetail) {
-      await prisma.postDetail.delete({
-        where: { postId: id },
-      });
-    }
+    // Use transaction to delete dependent records before the post
+    await prisma.$transaction([
+      // Delete SavedPost records referencing this post
+      prisma.savedPost.deleteMany({ where: { postId: id } }),
+      
+      // Delete post details (if any)
+      post.postDetail ? prisma.postDetail.delete({ where: { postId: id } }) : Promise.resolve(),
 
-    // Now delete the Post
-    await prisma.post.delete({ where: { id } });
+      // Finally, delete the post
+      prisma.post.delete({ where: { id } }),
+    ]);
 
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {

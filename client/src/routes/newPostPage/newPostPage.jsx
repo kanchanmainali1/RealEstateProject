@@ -10,11 +10,9 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Pin from "../../components/pin/Pin";
 
-
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -29,16 +27,15 @@ function NewPostPage() {
   const [error, setError] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [type, setType] = useState("rent");  // Track the selected type (rent/buy)
 
   const navigate = useNavigate();
 
-  
   const handleMapClick = (e) => {
     const { lat, lng } = e.latlng;
     setLatitude(lat);
     setLongitude(lng);
   };
-
 
   const MapClickHandler = () => {
     useMapEvents({
@@ -63,8 +60,8 @@ function NewPostPage() {
           bathroom: parseInt(inputs.bathroom),
           type: inputs.type,
           property: inputs.property,
-          latitude: latitude, 
-          longitude: longitude, 
+          latitude: latitude,
+          longitude: longitude,
           images: images,
         },
         postDetail: {
@@ -123,7 +120,7 @@ function NewPostPage() {
               <label>Location</label>
               <div style={{ height: "300px", width: "100%", marginBottom: "10px" }}>
                 <MapContainer
-                  center={[26.3949, 87.1240]} 
+                  center={[26.3949, 87.1240]}
                   zoom={7}
                   scrollWheelZoom={false}
                   style={{ height: "100%", width: "100%" }}
@@ -132,19 +129,19 @@ function NewPostPage() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
-                  <MapClickHandler /> 
+                  <MapClickHandler />
                   {latitude && longitude && (
                     <Pin
                       item={{
                         latitude,
                         longitude,
-                        img: images[0] || "", 
+                        img: images[0] || "",
                         title: "Selected Location",
-                        bedroom: 1, 
-                        price: 0, 
-                        id: "selected-location", 
+                        bedroom: 1,
+                        price: 0,
+                        id: "selected-location",
                       }}
-                    /> 
+                    />
                   )}
                 </MapContainer>
               </div>
@@ -173,7 +170,12 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="type">Type</label>
-              <select name="type" required>
+              <select
+                name="type"
+                required
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              >
                 <option value="rent">Rent</option>
                 <option value="buy">Buy</option>
               </select>
@@ -186,21 +188,28 @@ function NewPostPage() {
                 <option value="land">Land</option>
               </select>
             </div>
-            <div className="item">
-              <label htmlFor="utilities">Utilities Policy</label>
-              <select name="utilities" required>
-                <option value="owner">Owner is responsible</option>
-                <option value="tenant">Tenant is responsible</option>
-                <option value="shared">Shared</option>
-              </select>
-            </div>
-            <div className="item">
-              <label htmlFor="pet">Pet Policy</label>
-              <select name="pet" required>
-                <option value="allowed">Allowed</option>
-                <option value="not-allowed">Not Allowed</option>
-              </select>
-            </div>
+
+            {/* Conditional rendering for Utilities and Pet Policy */}
+            {type === "rent" && (
+              <>
+                <div className="item">
+                  <label htmlFor="utilities">Utilities Policy</label>
+                  <select name="utilities" required>
+                    <option value="owner">Owner is responsible</option>
+                    <option value="tenant">Tenant is responsible</option>
+                    <option value="shared">Shared</option>
+                  </select>
+                </div>
+                <div className="item">
+                  <label htmlFor="pet">Pet Policy</label>
+                  <select name="pet" required>
+                    <option value="allowed">Allowed</option>
+                    <option value="not-allowed">Not Allowed</option>
+                  </select>
+                </div>
+              </>
+            )}
+
             <div className="item">
               <label htmlFor="income">Income Policy</label>
               <input
@@ -216,20 +225,18 @@ function NewPostPage() {
               <input min={0} id="size" name="size" type="number" required />
             </div>
             <div className="item">
-              <label htmlFor="school">School</label>
+              <label htmlFor="school">School Distance</label>
               <input min={0} id="school" name="school" type="number" required />
             </div>
             <div className="item">
-              <label htmlFor="bus">Bus</label>
+              <label htmlFor="bus">Bus Stop Distance</label>
               <input min={0} id="bus" name="bus" type="number" required />
             </div>
             <div className="item">
-              <label htmlFor="restaurant">Restaurant</label>
+              <label htmlFor="restaurant">Restaurant Distance</label>
               <input min={0} id="restaurant" name="restaurant" type="number" required />
             </div>
-           
             <div className="item">
-             
               <UploadWidget
                 uwConfig={{
                   multiple: true,

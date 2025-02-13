@@ -1,45 +1,49 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // Import Link for routing
 import SearchBar from "../../components/searchbar/searchBar";
 import "./homePage.scss";
 import { AuthContext } from "../../context/AuthContext";
 
 function Homepage() {
   const { currentUser } = useContext(AuthContext);
-  console.log(currentUser);
+  const [recommendedProperties, setRecommendedProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Dummy data for recommended properties (replace with actual data later)
-  const recommendedProperties = [
-    {
-      id: 1,
-      title: "Luxury Apartment in Kathmandu",
-      price: "NRs.1,200,000",
-      image: "/a1.webp",
-    },
-    {
-      id: 2,
-      title: "Modern House in Pokhara",
-      price: "NRs.2,500,000",
-      image: "/b1.webp",
-    },
-    {
-      id: 3,
-      title: "Small Family House ",
-      price: "NRs.800,000",
-      image: "/c3.webp",
-    },
-    {
-      id: 4,
-      title: "Spacious Family Home",
-      price: "NRs.1,500,000",
-      image: "/d4.webp",
-    },
-  ];
+  // Fetch recommendations when the component mounts
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        if (!currentUser?.id) return; // Ensure the user is logged in
 
-  // Dummy data for the image gallery
-  const galleryImages = [
-    { id: 1, src: "/house1.jpg", alt: "Luxury Apartment" },
-    { id: 2, src: "/Home.png", alt: "ModernHouse" },
-  ];
+        // Fetch recommendations from the backend
+        const response = await fetch(
+          `http://localhost:8800/api/recommendations/${currentUser.id}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch recommendations");
+        }
+
+        const data = await response.json();
+
+        // Ensure the response is an array before setting state
+        if (Array.isArray(data)) {
+          setRecommendedProperties(data);
+        } else {
+          // Handle invalid data silently without displaying it in the frontend
+          setRecommendedProperties([]); // Empty array to avoid showing invalid data
+        }
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, [currentUser]);
 
   return (
     <div className="homePage">
@@ -47,48 +51,53 @@ function Homepage() {
       <div className="heroSection">
         <div className="overlay"></div>
         <div className="content">
-            <div className="hometext"> 
+          <div className="hometext">
             <h1 className="title">Find Your Perfect Home</h1>
-          <p className="subtitle">
-            Unlock the door to your next <span>House</span> and{" "}
-            <span>Apartment</span> with exclusive listings curated just for you.
-          </p>
-            </div>
-         
+            <p className="subtitle">
+              Unlock the door to your next <span>House</span> and{" "}
+              <span>Apartment</span> with exclusive listings curated just for
+              you.
+            </p>
+          </div>
           <div className="searchContainer">
             <SearchBar />
           </div>
         </div>
       </div>
 
-      {/* Image Gallery Section */}
-      <div className="photoGallery">
-        <h2>Explore Our Listings</h2>
-        <div className="galleryGrid">
-          {galleryImages.map((image) => (
-            <div key={image.id} className="galleryItem">
-              <img src={image.src} alt={image.alt} />
-              <div className="overlayText">{image.alt}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Recommended Properties Section */}
       <div className="recommendationsSection">
         <h2>Recommended for You</h2>
-        <div className="propertiesGrid">
-          {recommendedProperties.map((property) => (
-            <div key={property.id} className="propertyCard">
-              <img src={property.image} alt={property.title} />
-              <div className="details">
-                <h3>{property.title}</h3>
-                <p>{property.price}</p>
-                <button>View Details</button>
-              </div>
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <p>Loading recommendations...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : (
+          <div className="propertiesGrid">
+            {recommendedProperties.length > 0 ? (
+              recommendedProperties.map((property) => (
+                <Link
+                  key={property.id}
+                  to={`/${property.id}`} // Navigate to single property page
+                  className="propertyCardLink"
+                >
+                  <div className="propertyCard">
+                    <img
+                      src={property.images?.[0] || "/default-image.jpg"} // Use first image or a default one if not available
+                      alt={property.title || "Property Image"}
+                    />
+                    <div className="details">
+                      <h3>{property.title || "Untitled Property"}</h3>
+                      <p>NRs. {property.price?.toLocaleString() || "0"}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p>No recommendations available.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

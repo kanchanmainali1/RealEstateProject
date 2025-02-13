@@ -43,7 +43,7 @@ function Login() {
 
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1000);
     } catch (err) {
       setError(err.response?.data?.message || "An unexpected error occurred.");
 

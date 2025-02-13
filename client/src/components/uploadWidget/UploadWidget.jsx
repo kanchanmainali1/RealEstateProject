@@ -1,17 +1,14 @@
 import { createContext, useEffect, useState } from "react";
 
-
 const CloudinaryScriptContext = createContext();
 
 function UploadWidget({ uwConfig, setPublicId, setState }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-   
     if (!loaded) {
       const uwScript = document.getElementById("uw");
       if (!uwScript) {
-       
         const script = document.createElement("script");
         script.setAttribute("async", "");
         script.setAttribute("id", "uw");
@@ -19,7 +16,6 @@ function UploadWidget({ uwConfig, setPublicId, setState }) {
         script.addEventListener("load", () => setLoaded(true));
         document.body.appendChild(script);
       } else {
-       
         setLoaded(true);
       }
     }
@@ -32,25 +28,19 @@ function UploadWidget({ uwConfig, setPublicId, setState }) {
         (error, result) => {
           if (!error && result && result.event === "success") {
             console.log("Done! Here is the image info: ", result.info);
-           
-            setState(prev=>[...prev,result.info.secure_url])
+            setState(prev => [...prev, result.info.secure_url]);
           }
         }
       );
 
-      document.getElementById("upload_widget").addEventListener(
-        "click",
-        function () {
-          myWidget.open();
-        },
-        false
-      );
+      myWidget.open();
     }
   };
 
   return (
     <CloudinaryScriptContext.Provider value={{ loaded }}>
       <button
+        type="button"  // Added this to prevent form submission
         id="upload_widget"
         className="cloudinary-button"
         onClick={initializeCloudinaryWidget}

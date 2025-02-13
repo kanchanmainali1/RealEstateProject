@@ -17,9 +17,11 @@ function App() {
       element: <Layout />,
       children: [
         {
+
           path: "/",
           element: <HomePage />,
         },
+        
         {
           path: "/list",
           element: <ListPage />,
@@ -30,7 +32,6 @@ function App() {
           element: <SinglePage />,
           loader: singlePageLoader,
         },
-
         {
           path: "/login",
           element: <Login />,
@@ -48,7 +49,7 @@ function App() {
         {
           path: "/profile",
           element: <ProfilePage />,
-          loader: profilePageLoader
+          loader: profilePageLoader,
         },
         {
           path: "/profile/update",
