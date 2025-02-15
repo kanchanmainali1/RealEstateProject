@@ -14,40 +14,40 @@ export async function getRecommendations(req, res) {
   const userId = parseInt(req.params.userId);
 
   try {
-    // Get the user's saved posts
+   
     const savedPosts = await prisma.savedPost.findMany({
       where: { userId },
       include: { post: true },
     });
 
-    // Check if the user has saved posts
+    
     if (savedPosts.length === 0) {
       return res.status(200).json({ message: "No saved posts to base recommendations on." });
     }
 
-    // Get all posts in the database
+   
     const allPosts = await prisma.post.findMany({
       include: { postDetail: true },
     });
 
-    // Validate saved posts to avoid invalid or missing data
+   
     const savedFeatures = savedPosts
       .map((savedPost) => {
         if (!savedPost.post || savedPost.post.price == null || savedPost.post.bedroom == null || savedPost.post.bathroom == null) {
-          return null;  // Skip invalid posts
+          return null;  
         }
 
         return [
           savedPost.post.price,
           savedPost.post.bedroom || 0,
           savedPost.post.bathroom || 0,
-          savedPost.post.type === 'buy' ? 1 : 0, // Binary encoding for type
-          savedPost.post.property === 'apartment' ? 1 : 0, // Binary encoding for property
+          savedPost.post.type === 'buy' ? 1 : 0, 
+          savedPost.post.property === 'apartment' ? 1 : 0, 
         ];
       })
-      .filter((features) => features !== null);  // Filter out invalid features
+      .filter((features) => features !== null);  
 
-    // If no valid saved posts exist
+   
     if (savedFeatures.length === 0) {
       return res.status(200).json({ message: "No valid saved posts to base recommendations on." });
     }
@@ -60,7 +60,7 @@ export async function getRecommendations(req, res) {
     // Calculate cosine similarity for all posts
     const recommendations = allPosts.map((post) => {
       if (!post.price || post.bedroom == null || post.bathroom == null) {
-        return null;  // Skip invalid posts
+        return null;  
       }
 
       const postFeatures = [
@@ -73,17 +73,16 @@ export async function getRecommendations(req, res) {
 
       const similarity = cosineSimilarity(avgSavedFeatures, postFeatures);
       return { ...post, similarity };
-    }).filter((post) => post !== null);  // Filter out invalid posts
+    }).filter((post) => post !== null);  
 
-    // If no valid recommendations, return a message
+   
     if (recommendations.length === 0) {
       return res.status(200).json({ message: "No valid recommendations available." });
     }
 
-    // Sort recommendations by similarity score
     recommendations.sort((a, b) => b.similarity - a.similarity);
 
-    // Return top 10 recommendations
+    
     res.status(200).json(recommendations.slice(0, 10));
   } catch (error) {
     console.error("Error fetching recommendations:", error);

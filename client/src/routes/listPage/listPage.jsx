@@ -27,7 +27,7 @@ function ListPage() {
           </Suspense>
         </div>
       </div>
-      <div className="mapContainer">
+      <div className="mapContainer" style={{ height: '100vh' }}> {/* Ensure the map container has a defined height */}
         <Suspense fallback={<p>Loading...</p>}>
           <Await
             resolve={data.postResponse}

@@ -60,7 +60,7 @@ export const updateUser = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
-  const id = Number(req.params.id); // Ensure `id` is a number
+  const id = Number(req.params.id);
   const tokenUserId = req.userId;
 
   if (id !== tokenUserId) {
@@ -68,15 +68,43 @@ export const deleteUser = async (req, res) => {
   }
 
   try {
+    // Step 1: Delete post details
+    await prisma.postDetail.deleteMany({
+      where: {
+        post: {
+          userId: id,
+        },
+      },
+    });
+
+    // Step 2: Delete posts
+    await prisma.post.deleteMany({
+      where: { userId: id },
+    });
+
+    // Step 3: Delete saved posts
+    await prisma.savedPost.deleteMany({
+      where: { userId: id },
+    });
+
+    // Step 4: Delete messages
+    await prisma.message.deleteMany({
+      where: { senderId: id },
+    });
+
+    // Step 5: Now delete the user
     await prisma.user.delete({
       where: { id },
     });
+
     res.status(200).json({ message: "User deleted" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to delete user!" });
   }
 };
+
+
 
 export const savePost = async (req, res) => {
   const postId = Number(req.body.postId); // Ensure `postId` is a number

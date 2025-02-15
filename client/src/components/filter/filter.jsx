@@ -68,7 +68,7 @@ function Filter() {
             <option value="apartment">Apartment</option>
             <option value="house">House</option>
             
-            <option value="land">Land</option>
+            
           </select>
         </div>
         <div className="item">

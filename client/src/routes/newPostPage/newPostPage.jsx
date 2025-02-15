@@ -185,7 +185,7 @@ function NewPostPage() {
               <select name="property" required>
                 <option value="apartment">Apartment</option>
                 <option value="house">House</option>
-                <option value="land">Land</option>
+                
               </select>
             </div>
 

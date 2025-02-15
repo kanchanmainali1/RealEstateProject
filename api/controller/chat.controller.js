@@ -1,14 +1,14 @@
 import prisma from "../lib/prisma.js";
 
 export const getChats = async (req, res) => {
-  const tokenUserId = Number(req.userId); // Ensure it's an integer
+  const tokenUserId = Number(req.userId); 
 
   try {
     const chats = await prisma.chat.findMany({
       where: {
         users: {
           some: {
-            id: tokenUserId, // Prisma expects an Int
+            id: tokenUserId, 
           },
         },
       },
@@ -46,12 +46,12 @@ export const getChats = async (req, res) => {
 
 export const getChat = async (req, res) => {
   const tokenUserId = Number(req.userId);
-  const chatId = Number(req.params.id); // Convert id to integer
+  const chatId = Number(req.params.id); 
 
   try {
     const chat = await prisma.chat.findUnique({
       where: {
-        id: chatId, // Use the integer ID
+        id: chatId, 
       },
       include: {
         users: {
@@ -148,6 +148,6 @@ export const readChat = async (req, res) => {
     res.status(200).json(chat);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to read chat!" });
-  }
+    res.status(500).json({ message: "Failed to read chat!" });
+  }
 };
