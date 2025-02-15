@@ -11,9 +11,10 @@ import NewPostPage from "./routes/newPostPage/newPostPage";
 import { listPageLoader, profilePageLoader, singlePageLoader } from "./lib/loaders";
 import About from "./routes/about/about";
 import Contact from "./routes/contact/contact";
-import AdminLogin from "../admincomponent/adminlogin/AdminLogin";
-import AdminDashboard from "../admincomponent/admindashboard/AdminDashboard";
-import AdminLayout from "../admincomponent/adminlayout/AdminLayout";
+import AdminLayout from "./admincomponent/adminlayout/AdminLayout";
+import AdminLogin from "./admincomponent/adminlogin/AdminLogin";
+import AdminDashboard from "./admincomponent/admindashboard/AdminDashboard";
+
 
 function App() {
   const router = createBrowserRouter([
@@ -78,9 +79,9 @@ function App() {
     },
     {
       path: "/admin",
-      element: <AdminLayout />, // Admin Layout (without navbar)
+      element: <AdminLayout/>, // Admin Layout (without navbar)
       children: [
-        { path: "/admin", element: <AdminLogin /> },
+        { path: "/admin", element: <AdminLogin/> },
         { path: "/admin/dashboard", element: <AdminDashboard /> },
       ],
     },

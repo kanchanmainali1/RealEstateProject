@@ -25,8 +25,13 @@ model Post {
   userId     Int
   postDetail PostDetail?
   savedPosts SavedPost[]
+  status PostStatus @default(pending) 
 }
-
+enum PostStatus {
+  pending
+  approved
+  rejected
+}
 enum Type {
   buy
   rent
@@ -35,7 +40,7 @@ enum Type {
 enum Property {
   apartment
   house
-  land
+  
 }
 
 model PostDetail {
@@ -72,9 +77,11 @@ model User {
   createdAt  DateTime    @default(now())
   posts      Post[]
   savedPosts SavedPost[]
-  chats Chat[]
-  
+  chats      Chat[]
+  isAdmin    Boolean     @default(false) // New field for admin role
+  isBlocked  Boolean     @default(false) //  New field to block/unblock users
 }
+
 
 model Chat{
   id         Int         @id @default(autoincrement())

@@ -8,6 +8,8 @@ import userRoute from "./routes/user.route.js";
 import chatRoute from "./routes/chat.route.js";
 import messageRoute from "./routes/message.route.js";
 import recommendationRoutes from "./routes/recommendation.route.js"
+import adminRoutes from "./routes/admin.route.js"
+import adminAuthRouter from "./routes/adminauth.route.js";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use("/api/test", testRoute);
 app.use("/api/chats", chatRoute);
 app.use("/api/messages", messageRoute);
 app.use('/api/recommendations', recommendationRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/admin/auth", adminAuthRouter);
 
 
 
